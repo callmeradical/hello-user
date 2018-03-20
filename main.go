@@ -11,7 +11,7 @@ import (
 
 func main() {
 	log.Println("Initializing API...")
-	version.Release("1.0.0", "Hello User Service")
+	version.Release("2.0.0", "Hello User Service")
 
 	root := router.Routes{
 		router.Route{"Health", "GET", "/health", api.Healthz},
