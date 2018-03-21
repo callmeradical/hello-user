@@ -7,6 +7,7 @@ import (
 	"github.com/2ndWatch/golibs/server"
 	"github.com/2ndWatch/golibs/version"
 	"github.com/callmeradical/hello-user/api"
+	"github.com/coreos/go-systemd/daemon"
 )
 
 func main() {
@@ -19,6 +20,8 @@ func main() {
 	}
 
 	rtr := router.NewRouter(root, map[string]router.Routes{})
+
+	daemon.SdNotify(false, "READY=1")
 
 	server.Start("8080", rtr)
 }
