@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-user-v1
+  labels:
+    app: hello-user
+spec:
+  ports:
+    - port: 80
+      targetPort: 8080
+  selector:
+    app: hello-user
+    version: v1

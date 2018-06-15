@@ -1,0 +1,23 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  namespace: default
+  name: hello-user
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: "true"
+spec:
+  rules:
+  - host: hello.cromleylabs.com 
+    http:
+      paths:
+        - backend:
+            serviceName: hello-user-v1
+            servicePort: 80
+          path: /
+  tls:
+    # With this configuration kube-lego will generate a secret in namespace default called `example-tls`
+    # for the URL `www.example.com`
+    - hosts:
+      - "hello.cromleylabs.com"
+      secretName: hello-user-tls

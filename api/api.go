@@ -3,32 +3,40 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"strings"
 	"text/template"
-
-	"github.com/2ndWatch/golibs/version"
 )
 
 type IndexContents struct {
 	Version  string
 	Service  string
 	Hostname string
+	User     string
 }
 
-func GetIndexContents(pkg version.PackageInfo) IndexContents {
-	h, _ := os.Hostname()
-	return IndexContents{
-		version.Pkg.Version,
-		version.Pkg.Message,
-		h,
+var pkg = &IndexContents{
+	Version: "4.0.0",
+}
+
+func GetIndexContents() *IndexContents {
+	u, err := ioutil.ReadFile("/config/user")
+	if err != nil {
+		pkg.User = os.Getenv("USER")
+	} else {
+		pkg.User = string(u)
 	}
+
+	pkg.Hostname, _ = os.Hostname()
+
+	return pkg
 
 }
 
 func Healthz(w http.ResponseWriter, r *http.Request) {
-	response, err := json.MarshalIndent(version.Pkg, "", "\t")
+	response, err := json.MarshalIndent(pkg, "", "\t")
 	if err != nil {
 		fmt.Fprintf(w, err.Error())
 	}
@@ -37,12 +45,13 @@ func Healthz(w http.ResponseWriter, r *http.Request) {
 }
 
 func Index(w http.ResponseWriter, r *http.Request) {
-	content := GetIndexContents(version.Pkg)
+	content := GetIndexContents()
 	textTemplate := strings.Join(
 		[]string{
 			"<html><head><title>DemoApplication</title></head><body>",
-			"<h1>ServiceName: {{.Service}}</h1></br>",
+			"<h1>Hello, {{.User}}</h1></br>",
 			"<ul>",
+			"ServiceName: {{.Service}}</br>",
 			"Hostname: {{.Hostname}}</br>",
 			"Version: {{.Version}}",
 			"</ul>",
